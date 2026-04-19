@@ -2,6 +2,8 @@ import { motion } from 'framer-motion';
 import { useInView } from 'framer-motion';
 import { useRef } from 'react';
 import { Briefcase, GraduationCap, Calendar } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { portfolioContent } from '@/content/portfolio-content';
 
 const experiences = [
   // Education
@@ -47,7 +49,15 @@ const TimelineItem = ({
   index, 
   isInView 
 }: { 
-  experience: typeof experiences[0]; 
+  experience: {
+    type: 'work' | 'education';
+    title: string;
+    company: string;
+    location: string;
+    period: string;
+    description: string;
+    technologies: string[];
+  }; 
   index: number; 
   isInView: boolean;
 }) => {
@@ -77,7 +87,8 @@ const TimelineItem = ({
           <h3 className="text-xl font-bold mb-1 group-hover:text-primary transition-colors">
             {experience.title}
           </h3>
-          <p className="text-muted-foreground mb-3">{experience.company}</p>
+          <p className="text-muted-foreground mb-1">{experience.company}</p>
+          <p className="text-xs text-muted-foreground/70 mb-3">{experience.location}</p>
           <p className="text-sm text-muted-foreground mb-4">{experience.description}</p>
           
           <div className={`flex flex-wrap gap-2 ${isLeft ? 'md:justify-end' : 'md:justify-start'}`}>
@@ -114,6 +125,8 @@ const TimelineItem = ({
 const ExperienceSection = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-100px' });
+  const { language } = useLanguage();
+  const content = portfolioContent[language];
 
   return (
     <section id="experience" className="py-20 md:py-32 relative">
@@ -128,10 +141,10 @@ const ExperienceSection = () => {
           className="text-center mb-16"
         >
           <h2 className="section-title">
-            Experience & <span className="gradient-text">Education</span>
+            {content.experience.title} & <span className="gradient-text">{content.experience.subtitle}</span>
           </h2>
           <p className="section-subtitle">
-            My professional journey and academic background
+            {content.experience.description}
           </p>
         </motion.div>
 
@@ -142,7 +155,7 @@ const ExperienceSection = () => {
 
           {/* Timeline Items */}
           <div className="space-y-12">
-            {experiences.map((experience, index) => (
+            {content.experience.items.map((experience, index) => (
               <TimelineItem
                 key={`${experience.title}-${experience.period}`}
                 experience={experience}

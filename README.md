@@ -49,7 +49,7 @@ A modern, responsive portfolio website built with React, TypeScript, and Vite. F
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/R4M-0/portfolio-website.git
+git clone https://github.com/FendiYassine/portfolio-website.git
 cd portfolio-website
 ```
 
@@ -86,7 +86,7 @@ npm run dev
 portfolio-website/
 ├── public/               # Static assets
 │   ├── images/          # Images for projects and achievements
-│   └── Omar_CHIBOUB.pdf # Resume
+│   └── Cv_YassineFENDI_fr.pdf # Resume
 ├── src/
 │   ├── components/      # React components
 │   │   ├── ui/         # shadcn/ui components
@@ -160,16 +160,12 @@ bun test
 bun test:watch
 ```
 
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
 ## 👤 Author
 
-**Omar CHIBOUB**
+**Yassine FENDI**
 
-- GitHub: [@R4M-0](https://github.com/R4M-0)
-- Portfolio: [omarchiboub.me]
+- GitHub: [@FendiYassine](https://github.com/FendiYassine)
+- Portfolio: [FendiYassine](#)
 
 ## 🙏 Acknowledgments
 

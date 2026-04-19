@@ -3,81 +3,20 @@ import { useInView } from 'framer-motion';
 import { useRef, useState, useEffect } from 'react';
 import { ExternalLink, Github, Folder, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { portfolioContent } from '@/content/portfolio-content';
 
-const projects = [
-  {
-    title: 'QDesign',
-    description: 'Collaborative biological design platform integrating multimodal data with 3D visualization and explainable AI knowledge graphs.',
-    tech: ['Next.js', 'NestJS', 'Python', 'Rust', 'XQdrant', 'AI'],
-    github: 'https://github.com/R4M-0/Qdesign-Selecao',
-    live: 'https://qdesign.moetezfradi.me/',
-    image: '/images/projects/qdesign.png', 
-    featured: true,
-  },
-  {
-    title: 'FAIN',
-    description: 'FAIN is an intelligent trading platform developed for BVMT, utilizing AI to analyze market trends and execute trades.',
-    tech: ['Next.js', 'NestJS', 'Python', 'AI'],
-    github: 'https://github.com/R4M-0/IHEC-Codelab-Hackathon',
-    live: 'https://fain.moetezfradi.me/',
-    image: '/images/projects/fain.png', 
-    featured: true,
-  },
-  {
-    title: 'SmartDrive',
-    description: 'Mobile application analyzing driving behavior using smartphone sensors and providing real-time AI-powered voice coaching.',
-    tech: ['React Native', 'Python', 'FastAPI', 'AI'],
-    github: '#',
-    live: 'https://www.linkedin.com/posts/ghassen-n-15b540310_ai-machinelearning-mobiledev-activity-7399936315426762752-3yQc?utm_source=share&utm_medium=member_desktop&rcm=ACoAAEr8GQQBRwg2iBtLyQkfoFbxHNKUppUkQWA',
-    image: '/images/projects/smartdrive.png', 
-    featured: true,
-  },
-  {
-    title: 'mkstruct',
-    description: 'mkstruct is a lightweight Bash utility that transforms text-based directory trees into actual physical file systems.',
-    tech: ['Bash'],
-    github: 'https://github.com/R4M-0/mkstruct',
-    live: 'https://www.linkedin.com/posts/omar-chiboub_bash-cli-automation-activity-7412749615315279872--DRw?utm_source=share&utm_medium=member_desktop&rcm=ACoAAEr8GQQBRwg2iBtLyQkfoFbxHNKUppUkQWA',
-    image: '/images/projects/mkstruct.png', 
-    featured: true,
-  },
-  {
-    title: 'thanos',
-    description:'Thanos is a cinematic Bash CLI tool that enforces balance in the universe by deleting exactly half of all files inside a given directory — recursively — with dramatic animations inspired by Avengers: Infinity War.',
-    tech: ['Bash'],
-    github: 'https://github.com/R4M-0/thanos',
-    live: 'https://www.linkedin.com/posts/omar-chiboub_bash-linux-cli-activity-7411276553071788032-nhyk?utm_source=share&utm_medium=member_desktop&rcm=ACoAAEr8GQQBRwg2iBtLyQkfoFbxHNKUppUkQWA',
-    image: '/images/projects/thanos.png',
-    featured: true,
-  },
-  {
-    title: 'The Phishinator',
-    description: 'Phishing URL classifier with 91% accuracy. Web interface allows real-time URL analysis and prediction to improve cybersecurity awareness.',
-    tech: ['Python', 'Flask', 'React', 'Machine Learning'],
-    github: '#',
-    live: '#',
-    featured: false,
-  },
-  {
-    title: 'TalkEz',
-    description: 'Real-time voice translation web application using Web Speech API and FastAPI. Supports multi-language live communication for improved accessibility.',
-    tech: ['React', 'Python', 'Web Speech API', 'FastAPI'],
-    github: 'https://github.com/R4M-0/TalkEz',
-    live: '#',
-    featured: false,
-  },
-  {
-    title: 'Windows 95 Portfolio',
-    description: 'An Open Source nostalgic portfolio website inspired by the Windows 95 interface, showcasing projects and skills in a unique retro style.',
-    tech: ['React', 'Tailwind CSS', 'TypeScript'],
-    github: 'https://github.com/R4M-0/win95-portfolio',
-    live: 'https://omarchiboubportfolio.netlify.app/',
-    featured: false,
-  },
-];
+type Project = {
+  title: string;
+  description: string;
+  tech: string[];
+  github: string;
+  live: string;
+  featured: boolean;
+  image?: string;
+};
 
-
-const ProjectModal = ({ project, onClose }: { project: typeof projects[0]; onClose: () => void }) => {
+const ProjectModal = ({ project, onClose }: { project: Project; onClose: () => void }) => {
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -102,12 +41,12 @@ const ProjectModal = ({ project, onClose }: { project: typeof projects[0]; onClo
           <X className="w-6 h-6" />
         </button>
 
-        {/* Project Image */}
+        {/* Project Image or placeholder */}
         <div className="relative h-64 md:h-80 overflow-hidden bg-gradient-to-br from-primary/20 via-accent/10 to-secondary">
           {project.image ? (
             <>
-              <img 
-                src={project.image} 
+              <img
+                src={project.image}
                 alt={project.title}
                 className="w-full h-full object-cover"
               />
@@ -123,33 +62,35 @@ const ProjectModal = ({ project, onClose }: { project: typeof projects[0]; onClo
         {/* Content */}
         <div className="p-8">
           <div className="flex items-start justify-between mb-4">
-            <h3 className="text-3xl font-bold gradient-text">
-              {project.title}
-            </h3>
+            <h3 className="text-3xl font-bold gradient-text">{project.title}</h3>
             <div className="flex gap-3">
-              <motion.a
-                href={project.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-3 rounded-full hover:bg-primary/20 transition-colors"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Github className="w-6 h-6" />
-              </motion.a>
-              <motion.a
-                href={project.live}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-3 rounded-full hover:bg-primary/20 transition-colors"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <ExternalLink className="w-6 h-6" />
-              </motion.a>
+              {project.github !== '#' && (
+                <motion.a
+                  href={project.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-3 rounded-full hover:bg-primary/20 transition-colors"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Github className="w-6 h-6" />
+                </motion.a>
+              )}
+              {project.live !== '#' && (
+                <motion.a
+                  href={project.live}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-3 rounded-full hover:bg-primary/20 transition-colors"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <ExternalLink className="w-6 h-6" />
+                </motion.a>
+              )}
             </div>
           </div>
-          
+
           <p className="text-muted-foreground text-base leading-relaxed mb-6">
             {project.description}
           </p>
@@ -170,14 +111,20 @@ const ProjectModal = ({ project, onClose }: { project: typeof projects[0]; onClo
   );
 };
 
-const ProjectCard = ({ project, index, isInView }: { project: typeof projects[0]; index: number; isInView: boolean }) => {
-  const [hoverTimer, setHoverTimer] = useState<NodeJS.Timeout | null>(null);
+const ProjectCard = ({
+  project,
+  index,
+  isInView,
+}: {
+  project: Project;
+  index: number;
+  isInView: boolean;
+}) => {
+  const [hoverTimer, setHoverTimer] = useState<ReturnType<typeof setTimeout> | null>(null);
   const [showModal, setShowModal] = useState(false);
 
   const handleMouseEnter = () => {
-    const timer = setTimeout(() => {
-      setShowModal(true);
-    }, 3000); // 3 seconds
+    const timer = setTimeout(() => setShowModal(true), 3000);
     setHoverTimer(timer);
   };
 
@@ -198,9 +145,7 @@ const ProjectCard = ({ project, index, isInView }: { project: typeof projects[0]
 
   useEffect(() => {
     return () => {
-      if (hoverTimer) {
-        clearTimeout(hoverTimer);
-      }
+      if (hoverTimer) clearTimeout(hoverTimer);
     };
   }, [hoverTimer]);
 
@@ -216,12 +161,12 @@ const ProjectCard = ({ project, index, isInView }: { project: typeof projects[0]
           onMouseLeave={handleMouseLeave}
           onClick={handleClick}
         >
-          {/* Project Image */}
+          {/* Project Image or placeholder */}
           <div className="relative h-48 overflow-hidden bg-gradient-to-br from-primary/20 via-accent/10 to-secondary">
             {project.image ? (
               <>
-                <img 
-                  src={project.image} 
+                <img
+                  src={project.image}
                   alt={project.title}
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
@@ -242,31 +187,35 @@ const ProjectCard = ({ project, index, isInView }: { project: typeof projects[0]
                 {project.title}
               </h3>
               <div className="flex gap-2">
-                <motion.a
-                  href={project.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-2 rounded-full hover:bg-primary/20 transition-colors"
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <Github className="w-5 h-5" />
-                </motion.a>
-                <motion.a
-                  href={project.live}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-2 rounded-full hover:bg-primary/20 transition-colors"
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <ExternalLink className="w-5 h-5" />
-                </motion.a>
+                {project.github !== '#' && (
+                  <motion.a
+                    href={project.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2 rounded-full hover:bg-primary/20 transition-colors"
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <Github className="w-5 h-5" />
+                  </motion.a>
+                )}
+                {project.live !== '#' && (
+                  <motion.a
+                    href={project.live}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2 rounded-full hover:bg-primary/20 transition-colors"
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <ExternalLink className="w-5 h-5" />
+                  </motion.a>
+                )}
               </div>
             </div>
-            
+
             <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
               {project.description}
             </p>
@@ -307,34 +256,38 @@ const ProjectCard = ({ project, index, isInView }: { project: typeof projects[0]
         <div className="flex items-center justify-between mb-4">
           <Folder className="w-10 h-10 text-primary" />
           <div className="flex gap-2">
-            <a 
-              href={project.github}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-primary transition-colors"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <Github className="w-5 h-5" />
-            </a>
-            <a 
-              href={project.live}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-primary transition-colors"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <ExternalLink className="w-5 h-5" />
-            </a>
+            {project.github !== '#' && (
+              <a
+                href={project.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-primary transition-colors"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <Github className="w-5 h-5" />
+              </a>
+            )}
+            {project.live !== '#' && (
+              <a
+                href={project.live}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-primary transition-colors"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <ExternalLink className="w-5 h-5" />
+              </a>
+            )}
           </div>
         </div>
-        
+
         <h3 className="text-lg font-bold mb-2 group-hover:text-primary transition-colors">
           {project.title}
         </h3>
         <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
           {project.description}
         </p>
-        
+
         <div className="flex flex-wrap gap-2">
           {project.tech.slice(0, 3).map((tech) => (
             <span key={tech} className="text-xs text-muted-foreground font-mono">
@@ -356,9 +309,11 @@ const ProjectCard = ({ project, index, isInView }: { project: typeof projects[0]
 const ProjectsSection = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-100px' });
+  const { language } = useLanguage();
+  const content = portfolioContent[language];
 
-  const featuredProjects = projects.filter((p) => p.featured);
-  const otherProjects = projects.filter((p) => !p.featured);
+  const featuredProjects = content.projects.filter((p) => p.featured);
+  const otherProjects = content.projects.filter((p) => !p.featured);
 
   return (
     <section id="projects" className="py-20 md:py-32 relative">
@@ -373,22 +328,23 @@ const ProjectsSection = () => {
           className="text-center mb-16"
         >
           <h2 className="section-title">
-            Featured <span className="gradient-text">Projects</span>
+            {language === 'fr' ? (
+              <>Projets <span className="gradient-text">en Vedette</span></>
+            ) : (
+              <>Featured <span className="gradient-text">Projects</span></>
+            )}
           </h2>
           <p className="section-subtitle">
-            Click on any project for more details.
+            {language === 'fr'
+              ? 'Cliquez sur un projet pour plus de détails.'
+              : 'Click on any project for more details.'}
           </p>
         </motion.div>
 
         {/* Featured Projects Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
           {featuredProjects.map((project, index) => (
-            <ProjectCard
-              key={project.title}
-              project={project}
-              index={index}
-              isInView={isInView}
-            />
+            <ProjectCard key={project.title} project={project} index={index} isInView={isInView} />
           ))}
         </div>
 
@@ -399,17 +355,12 @@ const ProjectsSection = () => {
           transition={{ delay: 0.4 }}
           className="text-xl font-bold text-center mb-8"
         >
-          Other Noteworthy Projects
+          {language === 'fr' ? 'Autres Projets Notables' : 'Other Noteworthy Projects'}
         </motion.h3>
-        
+
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mb-12">
           {otherProjects.map((project, index) => (
-            <ProjectCard
-              key={project.title}
-              project={project}
-              index={index}
-              isInView={isInView}
-            />
+            <ProjectCard key={project.title} project={project} index={index} isInView={isInView} />
           ))}
         </div>
 
@@ -421,9 +372,13 @@ const ProjectsSection = () => {
           className="text-center"
         >
           <Button variant="outline" className="glow-border hover:bg-primary/10 rounded-full px-8">
-            <a href="https://github.com/R4M-0?tab=repositories" target="_blank" rel="noopener noreferrer">
-              View All Projects
-            </a>  
+            <a
+              href="https://github.com/FendiYassine?tab=repositories"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {language === 'fr' ? 'Voir Tous les Projets' : 'View All Projects'}
+            </a>
           </Button>
         </motion.div>
       </div>

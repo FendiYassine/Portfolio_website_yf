@@ -1,23 +1,26 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Moon, Sun, Download } from 'lucide-react';
+import { Menu, X, Moon, Sun } from 'lucide-react';
 import { useTheme } from '@/components/theme-provider';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { portfolioContent } from '@/content/portfolio-content';
 import { Button } from '@/components/ui/button';
-
-const navItems = [
-  { name: 'Home', href: '#home' },
-  { name: 'About', href: '#about' },
-  { name: 'Projects', href: '#projects' },
-  { name: 'Skills', href: '#skills' },
-  { name: 'Experience', href: '#experience' },
-  { name: 'Achievements', href: '#achievements' },
-  { name: 'Contact', href: '#contact' },
-];
+import { LanguageSwitcher } from './LanguageSwitcher';
 
 const Navigation = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { theme, setTheme } = useTheme();
+  const { language } = useLanguage();
+  const content = portfolioContent[language];
+
+  const navItems = [
+    { name: content.navigation.about, href: '#about' },
+    { name: content.navigation.experience, href: '#experience' },
+    { name: content.navigation.skills, href: '#skills' },
+    { name: content.navigation.projects, href: '#projects' },
+    { name: content.navigation.contact, href: '#contact' },
+  ];
   
 
   const getAppliedTheme = () => {
@@ -40,13 +43,6 @@ const Navigation = () => {
     setTheme(currentTheme === 'dark' ? 'light' : 'dark');
   };
 
-  const handleDownloadResume = () => {
-    const link = document.createElement('a');
-    link.href = '/Omar_CHIBOUB.pdf';
-    link.download = 'Omar_CHIBOUB_Resume.pdf';
-    link.click();
-  };
-
   return (
     <motion.nav
       initial={{ y: -100 }}
@@ -64,7 +60,7 @@ const Navigation = () => {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
-          {'<OC />'}
+          {'<YF />'}
         </motion.a>
 
         {/* Desktop Navigation */}
@@ -83,21 +79,13 @@ const Navigation = () => {
             </motion.a>
           ))}
           
-          {/* Download Resume Button */}
+          {/* Language Switcher */}
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: navItems.length * 0.1 }}
           >
-            <Button
-              onClick={handleDownloadResume}
-              size="sm"
-              variant="outline"
-              className="gap-2 hover:glow-border"
-            >
-              <Download className="w-4 h-4" />
-              Resume
-            </Button>
+            <LanguageSwitcher />
           </motion.div>
 
           {/* Theme Toggle Button */}
@@ -124,6 +112,9 @@ const Navigation = () => {
 
         {/* Mobile Menu Button */}
         <div className="md:hidden flex items-center gap-2">
+          {/* Language Switcher for Mobile */}
+          <LanguageSwitcher />
+          
           {/* Theme Toggle for Mobile */}
           <Button
             onClick={toggleTheme}

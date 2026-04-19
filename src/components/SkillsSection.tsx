@@ -1,110 +1,15 @@
 import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
-import {
-  Laptop,
-  Server,
-  Brain,
-  Wrench,
-  Code2,
-  FileJson,
-  Palette,
-  Boxes,
-  Leaf,
-  Database,
-  Share2,
-  Container,
-  Cloud,
-  GitBranch,
-  Terminal,
-  Cpu,
-  Zap,
-  Box,
-  Figma,
-} from 'lucide-react';
+import { Zap, Brain, Database, Wrench } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { portfolioContent } from '@/content/portfolio-content';
 
-/* ===================== DATA ===================== */
-
-const skillCategories = [
-  {
-    title: 'Frontend',
-    icon: Laptop,
-    skills: [
-      { name: 'React / Next.js', level: 95 },
-      { name: 'TypeScript', level: 90 },
-      { name: 'Tailwind CSS', level: 92 },
-      { name: 'Vue.js', level: 80 },
-    ],
-    gradient: 'from-blue-500 to-cyan-500',
-    bgGradient: 'from-blue-500/10 to-cyan-500/10',
-  },
-  {
-    title: 'Backend',
-    icon: Server,
-    skills: [
-      { name: 'Node.js', level: 88 },
-      { name: 'Python', level: 85 },
-      { name: 'PostgreSQL', level: 82 },
-      { name: 'GraphQL', level: 78 },
-    ],
-    gradient: 'from-green-500 to-emerald-500',
-    bgGradient: 'from-green-500/10 to-emerald-500/10',
-  },
-  {
-    title: 'AI / ML',
-    icon: Brain,
-    skills: [
-      { name: 'TensorFlow', level: 80 },
-      { name: 'PyTorch', level: 75 },
-      { name: 'OpenAI API', level: 90 },
-      { name: 'LangChain', level: 85 },
-    ],
-    gradient: 'from-purple-500 to-pink-500',
-    bgGradient: 'from-purple-500/10 to-pink-500/10',
-  },
-  {
-    title: 'Tools',
-    icon: Wrench,
-    skills: [
-      { name: 'Git / GitHub', level: 95 },
-      { name: 'Docker', level: 85 },
-      { name: 'AWS / GCP', level: 80 },
-      { name: 'CI/CD', level: 82 },
-    ],
-    gradient: 'from-orange-500 to-red-500',
-    bgGradient: 'from-orange-500/10 to-red-500/10',
-  },
-];
-
-const technologies = [
-  { name: 'JavaScript', icon: Code2 },
-  { name: 'TypeScript', icon: FileJson },
-  { name: 'React', icon: Boxes },
-  { name: 'Next.js', icon: Zap },
-  { name: 'Vue.js', icon: Leaf },
-  { name: 'Node.js', icon: Server },
-  { name: 'Python', icon: Terminal },
-  { name: 'FastAPI', icon: Zap },
-  { name: 'PostgreSQL', icon: Database },
-  { name: 'MongoDB', icon: Database },
-  { name: 'Redis', icon: Database },
-  { name: 'GraphQL', icon: Share2 },
-  { name: 'Docker', icon: Container },
-  { name: 'Kubernetes', icon: Box },
-  { name: 'AWS', icon: Cloud },
-  { name: 'GCP', icon: Cloud },
-  { name: 'TensorFlow', icon: Brain },
-  { name: 'PyTorch', icon: Cpu },
-  { name: 'OpenAI', icon: Brain },
-  { name: 'LangChain', icon: Brain },
-  { name: 'Tailwind', icon: Palette },
-  { name: 'Figma', icon: Figma },
-  { name: 'Git', icon: GitBranch },
-  { name: 'Linux', icon: Terminal },
-];
-
-const infiniteTechs = [...technologies, ...technologies];
-
-/* ===================== COMPONENTS ===================== */
+const categoryIcons: Record<string, React.ComponentType<any>> = {
+  'Data Science & ML': Brain,
+  'Data Engineering': Database,
+  'MLOps & Infrastructure': Wrench,
+  'Development': Zap,
+};
 
 const SkillBar = ({
   name,
@@ -146,6 +51,8 @@ const SkillBar = ({
 const SkillsSection = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
+  const { language } = useLanguage();
+  const content = portfolioContent[language];
 
   return (
     <section id="skills" className="py-20 md:py-32 relative overflow-hidden">
@@ -158,17 +65,17 @@ const SkillsSection = () => {
           className="text-center mb-16"
         >
           <h2 className="section-title">
-            Skills & <span className="gradient-text">Technologies</span>
+            {content.skills.title} & <span className="gradient-text">{content.skills.subtitle}</span>
           </h2>
           <p className="section-subtitle">
-            Technologies I've been working with recently
+            {content.skills.description}
           </p>
         </motion.div>
 
         {/* Skill Cards */}
         <div className="grid md:grid-cols-2 gap-6 mb-20">
-          {skillCategories.map((category, i) => {
-            const Icon = category.icon;
+          {content.skills.categories.map((category, i) => {
+            const Icon = categoryIcons[category.title] || Brain;
             return (
               <motion.div
                 key={category.title}
@@ -186,7 +93,7 @@ const SkillsSection = () => {
                   </h3>
                 </div>
 
-                {category.skills.map((skill, j) => (
+            {category.skills.map((skill, j) => (
                   <SkillBar
                     key={skill.name}
                     name={skill.name}
@@ -224,18 +131,15 @@ const SkillsSection = () => {
                 ease: 'linear',
               }}
             >
-              {infiniteTechs.map((tech, index) => {
-                const Icon = tech.icon;
-                return (
-                  <span
-                    key={`${tech.name}-${index}`}
-                    className="px-4 py-2 rounded-xl glass border border-border/50 flex items-center gap-2 text-sm font-medium whitespace-nowrap"
-                  >
-                    <Icon className="w-4 h-4 text-primary" />
-                    {tech.name}
-                  </span>
-                );
-              })}
+              {[...content.skills.technologies, ...content.skills.technologies].map((tech, index) => (
+                <span
+                  key={`${tech}-${index}`}
+                  className="px-4 py-2 rounded-xl glass border border-border/50 flex items-center gap-2 text-sm font-medium whitespace-nowrap"
+                >
+                  <Zap className="w-4 h-4 text-primary" />
+                  {tech}
+                </span>
+              ))}
             </motion.div>
           </div>
         </motion.div>

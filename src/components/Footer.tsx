@@ -15,17 +15,17 @@ const Footer = () => {
         >
           <div className="text-center md:text-left">
             <p className="text-muted-foreground text-sm">
-              © {currentYear} Omar Chiboub. All rights reserved.
+              © {currentYear} Yassine FENDI. All rights reserved.
             </p>
           </div>
-          
+
           <div className="flex items-center gap-1 text-sm text-muted-foreground">
             <span>Built with</span>
             <Heart className="w-4 h-4 text-primary fill-primary" />
             <span>using React & Tailwind</span>
           </div>
 
-          
+
         </motion.div>
       </div>
     </footer>

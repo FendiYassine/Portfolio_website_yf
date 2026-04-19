@@ -1,18 +1,27 @@
 import { motion } from 'framer-motion';
 import { useInView } from 'framer-motion';
 import { useRef } from 'react';
-import { Code2, Cpu, Rocket, Sparkles } from 'lucide-react';
+import { Code2, Brain, Zap, Sparkles } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { portfolioContent } from '@/content/portfolio-content';
 
-const highlights = [
-  { icon: Code2, label: '3+ Years Experience', color: 'text-primary' },
-  { icon: Cpu, label: 'Software Engineer', color: 'text-accent' },
-  { icon: Rocket, label: '25+ Projects', color: 'text-primary' },
-  { icon: Sparkles, label: 'Competitive Programmer', color: 'text-accent' },
-];
+const iconMap = {
+  Code2,
+  Brain,
+  Zap,
+  Sparkles,
+};
 
 const AboutSection = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-100px' });
+  const { language } = useLanguage();
+  const content = portfolioContent[language];
+  
+  const highlights = content.about.highlights.map((h) => ({
+    ...h,
+    icon: iconMap[h.icon as keyof typeof iconMap],
+  }));
 
   return (
     <section id="about" className="py-20 md:py-32 relative">
@@ -27,10 +36,10 @@ const AboutSection = () => {
           className="text-center mb-16"
         >
           <h2 className="section-title">
-            About <span className="gradient-text">Me</span>
+            {content.about.title} <span className="gradient-text">{content.about.subtitle}</span>
           </h2>
           <p className="section-subtitle">
-            Passionate Software Engineer crafting digital experiences
+            {content.about.heading}
           </p>
         </motion.div>
 
@@ -42,16 +51,16 @@ const AboutSection = () => {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="relative group"
           >
-            <div className="relative w-full max-w-md mx-auto aspect-square rounded-2xl overflow-hidden glow-border">
-              {/* Your Profile Image - Replace the src with your image path */}
-              <img 
-                src="/omar.png" 
-                alt="Omar Chiboub" 
-                className="w-full h-full object-cover"
-              />
-              {/* Animated border */}
-              <div className="absolute inset-0 border-2 border-primary/30 rounded-2xl group-hover:border-primary/60 transition-colors duration-500" />
-            </div>
+          <div className="relative w-full max-w-md mx-auto aspect-square rounded-2xl overflow-hidden glow-border">
+          {/* Profile Image */}
+          <img 
+            src="/images/profile.jpg" 
+            alt="Yassine FENDI" 
+            className="w-full h-full object-cover"
+          />
+          {/* Animated border */}
+          <div className="absolute inset-0 border-2 border-primary/30 rounded-2xl group-hover:border-primary/60 transition-colors duration-500" />
+        </div>
             {/* Floating elements */}
             <motion.div
               className="absolute -top-4 -right-4 w-16 h-16 bg-primary/20 rounded-full blur-xl"
@@ -72,24 +81,13 @@ const AboutSection = () => {
             transition={{ duration: 0.6, delay: 0.3 }}
           >
             <h3 className="text-2xl font-bold mb-4">
-              Building the future, <span className="text-primary">one line at a time</span>
+              {content.about.heading}
             </h3>
             
             <div className="space-y-4 text-muted-foreground mb-8">
-              <p>
-                I'm a passionate Full-Stack Developer with a deep love for DevOps, AI and ML.
-                With over 3 years of experience, I specialize in building scalable web applications
-                and intelligent systems that solve real-world problems.
-              </p>
-              <p>
-                My journey in tech started with curiosity about how things work, which evolved into
-                a career dedicated to creating innovative solutions. I thrive on challenges and
-                constantly push myself to learn new technologies and methodologies.
-              </p>
-              <p>
-                When I'm not busy, you'll find me creating my next project,
-                solving competitive programming challenges, or participating in the latest tech events.
-              </p>
+              {content.about.description.map((paragraph, index) => (
+                <p key={index}>{paragraph}</p>
+              ))}
             </div>
 
             {/* Highlights */}

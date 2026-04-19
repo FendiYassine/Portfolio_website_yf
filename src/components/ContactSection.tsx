@@ -1,54 +1,34 @@
 import { motion } from 'framer-motion';
 import { useInView } from 'framer-motion';
 import { useRef, useState } from 'react';
-import { Send, Mail, MapPin, Phone, Github, Linkedin,  } from 'lucide-react';
+import { Send, Mail, MapPin, Phone, Github, Linkedin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { portfolioContent } from '@/content/portfolio-content';
 import { sendEmail } from '@/lib/emailService';
-
-const contactInfo = [
-  { icon: Mail, label: 'Email', value: 'omar.chiboub.w@gmail.com', href: 'mailto:omar.chiboub.w@gmail.com' },
-  { icon: Phone, label: 'Phone', value: '+216 51 788 274', href: 'tel:+21651788274' },
-  { icon: MapPin, label: 'Location', value: 'Tunis, Tunisia', href: 'https://maps.app.goo.gl/b4wVAahLWN4qFeGKA' },
-];
-
-const LeetCodeIcon = (props) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="currentColor"
-    {...props}
-  >
-    <path d="M13.483 0a1.374 1.374 0 0 0-.961.438L7.116 6.226l-3.854 4.126a5.266 5.266 0 0 0-1.209 2.104 5.35 5.35 0 0 0-.125.513 5.527 5.527 0 0 0 .062 2.362 5.83 5.83 0 0 0 .349 1.017 5.938 5.938 0 0 0 1.271 1.818l4.277 4.193.039.038c2.248 2.165 5.852 2.133 8.063-.074l2.396-2.392c.54-.54.54-1.414.003-1.955a1.378 1.378 0 0 0-1.951-.003l-2.396 2.392a3.021 3.021 0 0 1-4.205.038l-.02-.019-4.276-4.193c-.652-.64-.972-1.469-.948-2.263a2.68 2.68 0 0 1 .066-.523 2.545 2.545 0 0 1 .619-1.164L9.13 8.114c1.058-1.134 3.204-1.27 4.43-.278l3.501 2.831c.593.48 1.461.387 1.94-.207a1.384 1.384 0 0 0-.207-1.943l-3.5-2.831c-.8-.647-1.766-1.045-2.774-1.202l2.015-2.158A1.384 1.384 0 0 0 13.483 0zm-2.866 12.815a1.38 1.38 0 0 0-1.38 1.382 1.38 1.38 0 0 0 1.38 1.382H20.79a1.38 1.38 0 0 0 1.38-1.382 1.38 1.38 0 0 0-1.38-1.382z" />
-  </svg>
-);
-
-const CodeforcesIcon = (props) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="currentColor"
-    {...props}
-  >
-    <path d="M4.5 7.5C5.328 7.5 6 8.172 6 9v10.5c0 .828-.672 1.5-1.5 1.5h-3C.672 21 0 20.328 0 19.5V9c0-.828.672-1.5 1.5-1.5h3zm9-4.5c.828 0 1.5.672 1.5 1.5v15c0 .828-.672 1.5-1.5 1.5h-3c-.828 0-1.5-.672-1.5-1.5v-15c0-.828.672-1.5 1.5-1.5h3zm9 7.5c.828 0 1.5.672 1.5 1.5v7.5c0 .828-.672 1.5-1.5 1.5h-3c-.828 0-1.5-.672-1.5-1.5V12c0-.828.672-1.5 1.5-1.5h3z" />
-  </svg>
-);
-
-const socialLinks = [
-  { icon: Github, href: 'https://github.com/R4M-0', label: 'GitHub' },
-  { icon: Linkedin, href: 'https://www.linkedin.com/in/omar-chiboub/', label: 'LinkedIn' },
-  { icon: LeetCodeIcon, href: 'https://leetcode.com/u/__R4M0__', label: 'LeetCode' },
-  { icon: CodeforcesIcon, href: 'https://codeforces.com/profile/r4m0', label: 'Codeforces' },
-];
 
 const ContactSection = () => {
   const ref = useRef(null);
   const formRef = useRef<HTMLFormElement>(null);
   const isInView = useInView(ref, { once: true, margin: '-100px' });
   const { toast } = useToast();
+  const { language } = useLanguage();
+  const content = portfolioContent[language];
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const contactInfo = content.contact.info.map((item) => ({
+    ...item,
+    icon: item.label === 'Email' ? Mail : item.label === 'Phone' ? Phone : MapPin,
+    href: item.label === 'Email' ? `mailto:${item.value}` : item.label === 'Phone' ? `tel:${item.value.replace(/\s/g, '')}` : '#',
+  }));
+
+  const socialLinks = [
+    { icon: Github, href: 'https://github.com/FendiYassine', label: 'GitHub' },
+    { icon: Linkedin, href: 'https://www.linkedin.com/in/yassine-fendi-25141a241/', label: 'LinkedIn' },
+  ];
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -59,16 +39,16 @@ const ContactSection = () => {
       await sendEmail(formRef.current!);
       
       toast({
-        title: "Message sent!",
-        description: "Thank you for reaching out. I'll get back to you soon!",
+        title: content.contact.success,
+        description: content.contact.successMessage,
       });
       
       (e.target as HTMLFormElement).reset();
     } catch (error) {
       console.error('Failed to send email:', error);
       toast({
-        title: "Failed to send message",
-        description: error instanceof Error ? error.message : "There was an error sending your message. Please try again or contact me directly via email.",
+        title: content.contact.error,
+        description: error instanceof Error ? error.message : content.contact.errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -90,10 +70,10 @@ const ContactSection = () => {
           className="text-center mb-16"
         >
           <h2 className="section-title">
-            Get In <span className="gradient-text">Touch</span>
+            {content.contact.title} <span className="gradient-text">{content.contact.subtitle}</span>
           </h2>
           <p className="section-subtitle">
-            Have a project in mind? Let's work together!
+            {content.contact.cta}
           </p>
         </motion.div>
 
@@ -104,10 +84,9 @@ const ContactSection = () => {
             animate={isInView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            <h3 className="text-2xl font-bold mb-6">Let's Connect</h3>
+            <h3 className="text-2xl font-bold mb-6">{language === 'fr' ? "Restons en contact" : "Let's Connect"}</h3>
             <p className="text-muted-foreground mb-8">
-              I'm always open to discussing new projects, creative ideas, or opportunities
-              to be part of your visions. Feel free to reach out through any of the channels below.
+              {content.contact.message}
             </p>
 
             {/* Contact Details */}
@@ -138,7 +117,7 @@ const ContactSection = () => {
               animate={isInView ? { opacity: 1 } : {}}
               transition={{ duration: 0.4, delay: 0.6 }}
             >
-              <p className="text-sm text-muted-foreground mb-4">Find me on social media</p>
+              <p className="text-sm text-muted-foreground mb-4">{language === 'fr' ? 'Me trouver sur' : 'Find me on social media'}</p>
               <div className="flex gap-4">
                 {socialLinks.map(({ icon: Icon, href, label }) => (
                   <motion.a
@@ -236,7 +215,7 @@ const ContactSection = () => {
                     />
                   ) : (
                     <>
-                      Send Message
+                      {content.contact.sendButton}
                       <Send className="w-4 h-4 ml-2" />
                     </>
                   )}

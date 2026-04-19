@@ -1,8 +1,21 @@
 import { motion } from 'framer-motion';
 import { ChevronDown, Github, Linkedin, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { portfolioContent } from '@/content/portfolio-content';
 
 const HeroSection = () => {
+  const { language } = useLanguage();
+  const content = portfolioContent[language];
+
+  const handleDownloadResume = () => {
+    const fileName = language === 'fr' ? 'Cv_YassineFENDI_fr.pdf' : 'Cv_YassineFENDI_en.pdf';
+    const link = document.createElement('a');
+    link.href = `/${fileName}`;
+    link.download = fileName;
+    link.click();
+  };
+
   return (
     <section
       id="home"
@@ -20,7 +33,7 @@ const HeroSection = () => {
           transition={{ duration: 0.6 }}
           className="text-primary font-mono mb-4"
         >
-          Hello, I'm
+          {content.hero.greeting}
         </motion.p>
 
         {/* Name */}
@@ -30,7 +43,7 @@ const HeroSection = () => {
           transition={{ duration: 0.6, delay: 0.1 }}
           className="text-5xl md:text-7xl lg:text-8xl font-bold mb-6"
         >
-          <span className="gradient-text">Omar Chiboub</span>
+          <span className="gradient-text">{content.hero.name}</span>
         </motion.h1>
 
         {/* Role */}
@@ -41,9 +54,7 @@ const HeroSection = () => {
           className="mb-8"
         >
           <h2 className="text-xl md:text-2xl lg:text-3xl text-muted-foreground">
-            <span className="text-foreground">Software Engineer</span>
-            {' / '}
-            <span className="text-primary">DevOps & AI Enthusiast</span>
+            <span className="text-foreground">{content.hero.title}</span>
           </h2>
         </motion.div>
 
@@ -54,7 +65,7 @@ const HeroSection = () => {
           transition={{ duration: 0.6, delay: 0.3 }}
           className="text-muted-foreground text-lg max-w-2xl mx-auto mb-10"
         >
-          Passionate about building innovative solutions that make a difference.
+          {content.hero.subtitle}
         </motion.p>
 
         {/* CTA Buttons */}
@@ -67,11 +78,9 @@ const HeroSection = () => {
           <Button
             size="lg"
             className="btn-glow bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-6 text-lg rounded-full"
-            asChild
+            onClick={handleDownloadResume}
           >
-            <a href="/Omar_CHIBOUB.pdf" download>
-              My Resume
-            </a>
+            {language === 'fr' ? 'Mon CV' : 'My Resume'}
           </Button>
           <Button
             variant="outline"
@@ -79,7 +88,7 @@ const HeroSection = () => {
             className="glow-border hover:bg-primary/10 px-8 py-6 text-lg rounded-full"
             asChild
           >
-            <a href="#contact">Get In Touch</a>
+            <a href="#projects">{content.hero.cta}</a>
           </Button>
         </motion.div>
 
@@ -91,9 +100,9 @@ const HeroSection = () => {
           className="flex items-center justify-center gap-6 mb-16"
         >
           {[
-            { icon: Github, href: 'https://github.com/R4M-0', label: 'GitHub' },
-            { icon: Linkedin, href: 'https://www.linkedin.com/in/omar-chiboub/', label: 'LinkedIn' },
-            { icon: Mail, href: 'mailto:omar.chiboub.w@gmail.com', label: 'Email' },
+            { icon: Github, href: 'https://github.com/FendiYassine', label: 'GitHub' },
+            { icon: Linkedin, href: 'https://www.linkedin.com/in/yassine-fendi-25141a241/', label: 'LinkedIn' },
+            { icon: Mail, href: 'mailto:yassine.fendi@edu.dsti.institute', label: 'Email' },
           ].map(({ icon: Icon, href, label }) => (
             <motion.a
               key={label}
